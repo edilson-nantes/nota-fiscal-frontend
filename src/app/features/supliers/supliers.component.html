@@ -1,0 +1,133 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="Adicionar" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button severity="secondary" label="Deletar" icon="pi pi-trash" outlined (onClick)="deleteSelectedSupliers()" [disabled]="!selectedSupliers || !selectedSupliers.length" />
+    </ng-template>
+</p-toolbar>
+
+<p-table
+    #dt
+    [value]="supliers"
+    [rows]="10"
+    [columns]="cols"
+    [paginator]="true"
+    [globalFilterFields]="['legalName', 'email', 'phone', 'cnpj']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedSupliers"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} fornecedores"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">Gerenciar Fornecedores</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Pesquisar..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th style="min-width: 16rem">Código</th>
+            <th pSortableColumn="legalName" style="min-width:16rem">
+                Razão Social
+                <p-sortIcon field="legalName" />
+            </th>
+            <th>Email</th>
+            <th pSortableColumn="phone" style="min-width: 8rem">
+                Telefone
+                <p-sortIcon field="phone" />
+            </th>
+            <th pSortableColumn="cnpj" style="min-width:10rem">
+                CNPJ
+                <p-sortIcon field="cnpj" />
+            </th>
+            <th style="min-width: 12rem"></th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-suplier>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="suplier" />
+            </td>
+            <td style="min-width: 12rem">{{ suplier.code }}</td>
+            <td style="min-width: 16rem">{{ suplier.legalName }}</td>
+            <td style="min-width: 16rem">{{ suplier.email }}</td>
+            <td style="min-width: 16rem">{{ suplier.phone }}</td>
+            <td style="min-width: 16rem">{{ suplier.cnpj }}</td>
+
+            <td>
+                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editSuplier(suplier)" />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteSuplier(suplier)" />
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="suplierDialog" [style]="{ width: '450px' }" header="Detalhes do Fornecedor" [modal]="true">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+            <div>
+                <label for="code" class="block font-bold mb-3">Código</label>
+                <input type="text" pInputText id="code" [(ngModel)]="suplier.code" required autofocus fluid />
+                <small class="text-red-500" *ngIf="submitted && !suplier.code">Código é obrigatório.</small>
+            </div>
+            <div>
+                <label for="legalName" class="block font-bold mb-3">Razão Social</label>
+                <input type="text" pInputText id="legalName" [(ngModel)]="suplier.legalName" required fluid />
+                <small class="text-red-500" *ngIf="submitted && !suplier.legalName">Razão Social é obrigatório.</small>
+            </div>
+            <div>
+                <label for="email" class="block font-bold mb-3">Email</label>
+                <input type="email" pInputText id="email" [(ngModel)]="suplier.email" required fluid />
+                <small class="text-red-500" *ngIf="submitted && !suplier.email">Email é obrigatório.</small>
+            </div>
+            <div>
+                <label for="phone" class="block font-bold mb-3">Telefone</label>
+                <input type="text" pInputText id="phone" [(ngModel)]="suplier.phone" required fluid />
+                <small class="text-red-500" *ngIf="submitted && !suplier.phone">Telefone é obrigatório.</small>
+            </div>
+            <div>
+                <label for="cnpj" class="block font-bold mb-3">CNPJ</label>
+                <input type="text" pInputText id="cnpj" [(ngModel)]="suplier.cnpj" required fluid />
+                <small class="text-red-500" *ngIf="submitted && !suplier.cnpj">CNPJ é obrigatório.</small>
+            </div>
+
+            <div>
+                <label for="dataBaixa" class="block font-bold mb-3">Data de Baixa</label>
+                <p-datepicker id="dataBaixa" [(ngModel)]="suplier.dataBaixa" dateFormat="dd/mm/yy" showIcon="true"></p-datepicker>
+            </div>
+
+            <div>
+                <span class="block font-bold mb-4">Situação</span>
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="flex items-center gap-2 col-span-6">
+                        <p-radiobutton id="activeSituation" name="situation" value="Ativo" [(ngModel)]="suplier.situation" />
+                        <label for="category1">Ativo</label>
+                    </div>
+                    <div class="flex items-center gap-2 col-span-6">
+                        <p-radiobutton id="baixadoSituation" name="situation" value="Baixado" [(ngModel)]="suplier.situation" />
+                        <label for="category1">Baixado</label>
+                    </div>
+                    <div class="flex items-center gap-2 col-span-6">
+                        <p-radiobutton id="suspendedSituation" name="situation" value="Suspenso" [(ngModel)]="suplier.situation" />
+                        <label for="category1">Suspenso</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button label="Salvar" icon="pi pi-check" (click)="saveSuplier()" />
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />
