@@ -4,21 +4,16 @@ import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { RatingModule } from 'primeng/rating';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
-import { SelectModule } from 'primeng/select';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
-import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductsService } from './service/products.service';
-import { HttpClientModule, provideHttpClient } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 
 interface Column {
@@ -40,20 +35,15 @@ interface ExportColumn {
         TableModule,
         FormsModule,
         ButtonModule,
-        ToastModule,
         ToolbarModule,
-        RatingModule,
         InputTextModule,
         TextareaModule,
-        SelectModule,
         RadioButtonModule,
         InputNumberModule,
         DialogModule,
-        TagModule,
         InputIconModule,
         IconFieldModule,
         ConfirmDialogModule,
-        HttpClientModule
     ],
     templateUrl: './products.component.html',
     providers: [MessageService, ProductsService, ConfirmationService]

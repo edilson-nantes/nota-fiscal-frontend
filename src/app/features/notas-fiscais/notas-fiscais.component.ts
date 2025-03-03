@@ -4,7 +4,6 @@ import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { RatingModule } from 'primeng/rating';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,13 +12,10 @@ import { SelectModule } from 'primeng/select';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
-import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { CalendarModule } from 'primeng/calendar';
 import { NotaFiscal, NotasFiscaisService } from './service/notas-fiscais.service';
-import { HttpClientModule } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { Suplier, SupliersService } from '../supliers/service/supliers.service';
@@ -42,12 +38,9 @@ interface ExportColumn {
     standalone: true,
     imports: [
         CommonModule,
-        HttpClientModule,
         TableModule,
         FormsModule,
         ButtonModule,
-        SelectModule,
-        ToastModule,
         ToolbarModule,
         RatingModule,
         InputTextModule,
@@ -56,7 +49,6 @@ interface ExportColumn {
         RadioButtonModule,
         InputNumberModule,
         DialogModule,
-        TagModule,
         InputIconModule,
         IconFieldModule,
         ConfirmDialogModule,
@@ -218,15 +210,6 @@ export class NotasFiscaisComponent implements OnInit {
                     });
                 });
             } else {
-                if (this.notaFiscal.emissionDate) {
-                    this.notaFiscal.emissionDate = format(this.notaFiscal.emissionDate, "yyyy-MM-dd'T'HH:mm:ss");
-                }
-
-                if(this.notaFiscal.suplier) {
-                    this.notaFiscal.suplier = {
-                        id: this.notaFiscal.suplier,
-                    } as Suplier
-                }
                 this.notasFiscaisService.createNotaFiscal(this.notaFiscal).pipe(
                     catchError((error) => {
                         this.messageService.add({
