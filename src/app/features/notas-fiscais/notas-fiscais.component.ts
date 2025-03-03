@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -17,11 +17,14 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Suplier, SupliersService } from './service/supliers.service';
+import { CalendarModule } from 'primeng/calendar';
+import { NotaFiscal, NotasFiscaisService } from './service/notas-fiscais.service';
 import { HttpClientModule } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { Suplier, SupliersService } from '../supliers/service/supliers.service';
 import { DatePickerModule } from 'primeng/datepicker';
+import { format } from 'date-fns';
 
 interface Column {
     field: string;
@@ -35,7 +38,7 @@ interface ExportColumn {
 }
 
 @Component({
-    selector: 'app-supliers',
+    selector: 'app-notas-fiscais',
     standalone: true,
     imports: [
         CommonModule,
@@ -43,7 +46,7 @@ interface ExportColumn {
         TableModule,
         FormsModule,
         ButtonModule,
-        DatePickerModule,
+        SelectModule,
         ToastModule,
         ToolbarModule,
         RatingModule,
@@ -56,20 +59,25 @@ interface ExportColumn {
         TagModule,
         InputIconModule,
         IconFieldModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        DatePickerModule,
     ],
-    templateUrl: './supliers.component.html',
-    styleUrls: ['./supliers.component.css'],
-    providers: [MessageService, SupliersService, ConfirmationService]
+    templateUrl: './notas-fiscais.component.html',
+    styleUrls: ['./notas-fiscais.component.css'],
+    providers: [MessageService, NotasFiscaisService, SupliersService, ConfirmationService]
 })
-export class SupliersComponent implements OnInit {
-    suplierDialog: boolean = false;
+export class NotasFiscaisComponent implements OnInit {
+    notaFiscalDialog: boolean = false;
+
+    notasFiscais= signal<NotaFiscal[]>([]);
+
+    notaFiscal!: NotaFiscal;
 
     supliers = signal<Suplier[]>([]);
 
     suplier!: Suplier;
 
-    selectedSupliers!: Suplier[] | null;
+    selectedNotasFiscais!: NotaFiscal[] | null;
 
     submitted: boolean = false;
 
@@ -82,9 +90,10 @@ export class SupliersComponent implements OnInit {
     cols!: Column[];
 
     constructor(
-        private supliersService: SupliersService,
+        private notasFiscaisService: NotasFiscaisService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private supliersService: SupliersService
     ) {}
 
     ngOnInit() {
@@ -92,6 +101,11 @@ export class SupliersComponent implements OnInit {
     }
 
     loadData() {
+        this.notasFiscaisService.notasFiscais$.subscribe((data) => {
+            this.notasFiscais.set(data);
+        });
+        this.notasFiscaisService.getNotasFiscais().subscribe();
+
         this.supliersService.supliers$.subscribe((data) => {
             this.supliers.set(data);
         });
@@ -103,32 +117,32 @@ export class SupliersComponent implements OnInit {
     }
 
     openNew() {
-        this.suplier = {};
+        this.notaFiscal = {};
         this.submitted = false;
-        this.suplierDialog = true;
+        this.notaFiscalDialog = true;
     }
 
-    editSuplier(suplier: Suplier) {
-        this.suplier = { ...suplier };
-        this.suplierDialog = true;
+    editNotaFiscal(notaFiscal: NotaFiscal) {
+        this.notaFiscal = { ...notaFiscal };
+        this.notaFiscalDialog = true;
     }
 
-    deleteSelectedSupliers() {
+    deleteSelectedNotasFiscais() {
         this.confirmationService.confirm({
-            message: 'Você tem certeza que quer deletar os fornecedores selecionados?',
+            message: 'Você tem certeza que quer deletar as notas fiscais selecionadas?',
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.selectedSupliers?.forEach(suplier => {
-                    this.supliersService.deleteSuplier(suplier.id!).subscribe(() => {
+                this.selectedNotasFiscais?.forEach(notaFiscal => {
+                    this.notasFiscaisService.deleteNotaFiscal(notaFiscal.id!).subscribe(() => {
                         this.loadData();
                     });
                 });
-                this.selectedSupliers = null;
+                this.selectedNotasFiscais = null;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Fornecedores Deletados',
+                    detail: 'Notas Fiscais Deletadas',
                     life: 3000
                 });
             }
@@ -136,22 +150,22 @@ export class SupliersComponent implements OnInit {
     }
 
     hideDialog() {
-        this.suplierDialog = false;
+        this.notaFiscalDialog = false;
         this.submitted = false;
     }
 
-    deleteSuplier(suplier: Suplier) {
+    deleteNotaFiscal(notaFiscal: NotaFiscal) {
         this.confirmationService.confirm({
-            message: 'Você tem certeza que quer deletar o fornecedor:  ' + suplier.code + '?',
+            message: 'Você tem certeza que quer deletar a nota fiscal:  ' + notaFiscal.numberNota + '?',
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.supliersService.deleteSuplier(suplier.id!).subscribe(() => {
+                this.notasFiscaisService.deleteNotaFiscal(notaFiscal.id!).subscribe(() => {
                     this.loadData();
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Successful',
-                        detail: 'Fornecedor Deletado',
+                        detail: 'Nota Fiscal Deletada',
                         life: 3000
                     });
                 });
@@ -161,8 +175,8 @@ export class SupliersComponent implements OnInit {
 
     findIndexById(id: string): number {
         let index = -1;
-        for (let i = 0; i < this.supliers().length; i++) {
-            if (this.supliers()[i].id === Number(id)) {
+        for (let i = 0; i < this.notasFiscais().length; i++) {
+            if (this.notasFiscais()[i].id === Number(id)) {
                 index = i;
                 break;
             }
@@ -171,11 +185,20 @@ export class SupliersComponent implements OnInit {
         return index;
     }
 
-    saveSuplier() {
+    saveNotaFiscal() {
         this.submitted = true;
-        if (this.suplier.code?.trim()) {
-            if (this.suplier.id) {
-                this.supliersService.updateSuplier(this.suplier.id, this.suplier).pipe(
+        if (this.notaFiscal.numberNota?.trim()) {
+            if (this.notaFiscal.emissionDate) {
+                this.notaFiscal.emissionDate = format(this.notaFiscal.emissionDate, "yyyy-MM-dd'T'HH:mm:ss");
+            }
+            if(this.notaFiscal.suplier) {
+                this.notaFiscal.suplier = {
+                    id: this.notaFiscal.suplier,
+                } as Suplier
+            }
+            
+            if (this.notaFiscal.id) {
+                this.notasFiscaisService.updateNotaFiscal(this.notaFiscal.id, this.notaFiscal).pipe(
                     catchError((error) => {
                         this.messageService.add({
                             severity: 'error',
@@ -190,12 +213,21 @@ export class SupliersComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Successful',
-                        detail: 'Fornecedor Atualizado',
+                        detail: 'Nota Fiscal Atualizada',
                         life: 3000
                     });
                 });
             } else {
-                this.supliersService.createSuplier(this.suplier).pipe(
+                if (this.notaFiscal.emissionDate) {
+                    this.notaFiscal.emissionDate = format(this.notaFiscal.emissionDate, "yyyy-MM-dd'T'HH:mm:ss");
+                }
+
+                if(this.notaFiscal.suplier) {
+                    this.notaFiscal.suplier = {
+                        id: this.notaFiscal.suplier,
+                    } as Suplier
+                }
+                this.notasFiscaisService.createNotaFiscal(this.notaFiscal).pipe(
                     catchError((error) => {
                         this.messageService.add({
                             severity: 'error',
@@ -210,14 +242,16 @@ export class SupliersComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Successful',
-                        detail: 'Fornecedor Criado',
+                        detail: 'Nota Fiscal Criada',
                         life: 3000
                     });
                 });
             }
 
-            this.suplierDialog = false;
-            this.suplier = {};
+            console.log(this.notaFiscal);
+
+            this.notaFiscalDialog = false;
+            this.notaFiscal = {};
         }
     }
 }

@@ -62,8 +62,8 @@
     <ng-template #content>
         <div class="flex flex-col gap-6">
             <div>
-                <label for="name" class="block font-bold mb-3">Código</label>
-                <input type="text" pInputText id="name" [(ngModel)]="product.code" required autofocus fluid />
+                <label for="code" class="block font-bold mb-3">Código</label>
+                <input type="text" pInputText id="code" [(ngModel)]="product.code" required autofocus fluid />
                 <small class="text-red-500" *ngIf="submitted && !product.code">Código é obrigatório.</small>
             </div>
             <div>

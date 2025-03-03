@@ -4,7 +4,6 @@ import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { RatingModule } from 'primeng/rating';
@@ -41,7 +40,6 @@ interface ExportColumn {
         TableModule,
         FormsModule,
         ButtonModule,
-        RippleModule,
         ToastModule,
         ToolbarModule,
         RatingModule,

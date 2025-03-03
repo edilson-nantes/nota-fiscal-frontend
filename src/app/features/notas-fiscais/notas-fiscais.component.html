@@ -1,0 +1,108 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="Adicionar" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button severity="secondary" label="Deletar" icon="pi pi-trash" outlined (onClick)="deleteSelectedNotasFiscais()" [disabled]="!selectedNotasFiscais || !selectedNotasFiscais.length" />
+    </ng-template>
+</p-toolbar>
+
+<p-table
+    #dt
+    [value]="notasFiscais()"
+    [rows]="10"
+    [columns]="cols"
+    [paginator]="true"
+    [globalFilterFields]="['numberNota', 'suplierId', 'address', 'totalValue']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedNotasFiscais"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} notas fiscais"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">Gerenciar Notas Fiscais</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Pesquisar..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th style="min-width: 16rem">Número da Nota</th>
+            <th pSortableColumn="emissionDate" style="min-width:16rem">
+                Data de Emissão
+                <p-sortIcon field="emissionDate" />
+            </th>
+            <th>Fornecedor</th>
+            <th pSortableColumn="address" style="min-width: 8rem">
+                Endereço
+                <p-sortIcon field="address" />
+            </th>
+            <th pSortableColumn="totalValue" style="min-width:10rem">
+                Valor Total
+                <p-sortIcon field="totalValue" />
+            </th>
+            <th style="min-width: 12rem"></th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-notaFiscal>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="notaFiscal" />
+            </td>
+            <td style="min-width: 12rem">{{ notaFiscal.numberNota }}</td>
+            <td style="min-width: 16rem">{{ notaFiscal.emissionDate | date: 'dd/MM/yyyy' }}</td>
+            <td style="min-width: 16rem">{{ notaFiscal.suplier.legalName }}</td>
+            <td style="min-width: 16rem">{{ notaFiscal.address }}</td>
+            <td style="min-width: 16rem">{{ notaFiscal.totalValue | currency: 'BRL' }}</td>
+            <td>
+                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editNotaFiscal(notaFiscal)" />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteNotaFiscal(notaFiscal)" />
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="notaFiscalDialog" [style]="{ width: '450px' }" header="Detalhes da Nota Fiscal" [modal]="true">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+            <div>
+                <label for="numberNota" class="block font-bold mb-3">Número da Nota</label>
+                <input type="text" pInputText id="numberNota" [(ngModel)]="notaFiscal.numberNota" required autofocus fluid />
+                <small class="text-red-500" *ngIf="submitted && !notaFiscal.numberNota">Número da Nota é obrigatório.</small>
+            </div>
+            <div>
+                <label for="emissionDate" class="block font-bold mb-3">Data de Emissão</label>
+                <p-datepicker id="emissionDate" [(ngModel)]="notaFiscal.emissionDate" dateFormat="dd/mm/yy" [showTime]="true" showIcon="true"></p-datepicker>
+            </div>
+            <div>
+                <label for="suplier" class="block font-bold mb-3">Fornecedor</label>
+                <p-select [options]="supliers()" optionLabel="legalName" optionValue="id" [(ngModel)]="notaFiscal.suplier" placeholder="Selecione um fornecedor"></p-select>
+                <small class="text-red-500" *ngIf="submitted && !notaFiscal.suplier">Fornecedor é obrigatório.</small>
+            </div>
+            <div>
+                <label for="address" class="block font-bold mb-3">Endereço</label>
+                <input type="text" pInputText id="address" [(ngModel)]="notaFiscal.address" required fluid />
+                <small class="text-red-500" *ngIf="submitted && !notaFiscal.address">Endereço é obrigatório.</small>
+            </div>
+            <div>
+                <label for="totalValue" class="block font-bold mb-3">Valor Total</label>
+                <input type="number" pInputText id="totalValue" [(ngModel)]="notaFiscal.totalValue" required fluid />
+                <small class="text-red-500" *ngIf="submitted && !notaFiscal.totalValue">Valor Total é obrigatório.</small>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button class="text-blue-500" label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button class="text-blue-500" label="Salvar" icon="pi pi-check" (click)="saveNotaFiscal()" />
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />
