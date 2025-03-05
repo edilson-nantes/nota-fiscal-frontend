@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { Suplier } from '../../supliers/service/supliers.service';
+import { ItemNfiscal } from './item-nfiscal.service';
 
 export interface NotaFiscal {
     id?: number;
@@ -13,14 +14,6 @@ export interface NotaFiscal {
     createdAt?: Date;
     updatedAt?: Date;
     items?: ItemNfiscal[];
-}
-
-export interface ItemNfiscal {
-    id?: number;
-    description?: string;
-    quantity?: number;
-    unitPrice?: number;
-    totalPrice?: number;
 }
 
 @Injectable({

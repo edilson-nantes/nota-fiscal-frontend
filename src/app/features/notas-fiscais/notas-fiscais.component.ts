@@ -16,11 +16,13 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { NotaFiscal, NotasFiscaisService } from './service/notas-fiscais.service';
+import { ItemNfiscal, ItemNfiscalService } from './service/item-nfiscal.service';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { Suplier, SupliersService } from '../supliers/service/supliers.service';
 import { DatePickerModule } from 'primeng/datepicker';
 import { format } from 'date-fns';
+import { Product, ProductsService } from '../products/service/products.service';
 
 interface Column {
     field: string;
@@ -61,7 +63,7 @@ interface ExportColumn {
 export class NotasFiscaisComponent implements OnInit {
     notaFiscalDialog: boolean = false;
 
-    notasFiscais= signal<NotaFiscal[]>([]);
+    notasFiscais = signal<NotaFiscal[]>([]);
 
     notaFiscal!: NotaFiscal;
 
@@ -81,11 +83,23 @@ export class NotasFiscaisComponent implements OnInit {
 
     cols!: Column[];
 
+    itemDialog: boolean = false;
+
+    items = signal<ItemNfiscal[]>([]);
+
+    item!: ItemNfiscal;
+
+    products = signal<Product[]>([]);
+
+    product!: Product;
+
     constructor(
         private notasFiscaisService: NotasFiscaisService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
-        private supliersService: SupliersService
+        private supliersService: SupliersService,
+        private productsService: ProductsService,
+        private itemsService: ItemNfiscalService
     ) {}
 
     ngOnInit() {
@@ -102,6 +116,15 @@ export class NotasFiscaisComponent implements OnInit {
             this.supliers.set(data);
         });
         this.supliersService.getSupliers().subscribe();
+
+        this.productsService.products$.subscribe((data) => {
+            data.map((product) => {
+                if (!product.hasMovement){
+                    this.products.update(products => [...products, product]);
+                }
+            })
+        });
+        this.productsService.getProducts().subscribe();
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -109,7 +132,7 @@ export class NotasFiscaisComponent implements OnInit {
     }
 
     openNew() {
-        this.notaFiscal = {};
+        this.notaFiscal = { items: [] };
         this.submitted = false;
         this.notaFiscalDialog = true;
     }
@@ -147,11 +170,13 @@ export class NotasFiscaisComponent implements OnInit {
     }
 
     deleteNotaFiscal(notaFiscal: NotaFiscal) {
+        console.log(notaFiscal);
         this.confirmationService.confirm({
             message: 'Você tem certeza que quer deletar a nota fiscal:  ' + notaFiscal.numberNota + '?',
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
+                console.log(notaFiscal.id);
                 this.notasFiscaisService.deleteNotaFiscal(notaFiscal.id!).subscribe(() => {
                     this.loadData();
                     this.messageService.add({
@@ -231,10 +256,100 @@ export class NotasFiscaisComponent implements OnInit {
                 });
             }
 
-            console.log(this.notaFiscal);
-
             this.notaFiscalDialog = false;
             this.notaFiscal = {};
+        }
+    }
+
+    openNewItem() {
+        this.item = {};
+        this.itemDialog = true;
+    }
+
+    editItem(item: ItemNfiscal) {
+        this.item = { ...item, };
+
+        console.log(this.item);
+
+        this.itemDialog = true;
+    }
+
+    deleteItem(item: ItemNfiscal) {
+        this.confirmationService.confirm({
+            message: ' Vocé tem certeza que quer deletar o item:  ' + item + '?',
+            header: 'Confirmar',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                this.itemsService.deleteItem(item.id!).subscribe(() => {
+                    this.loadData();
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Item Deletado',
+                        life: 3000
+                    });
+                });
+            }
+        })
+    }
+
+    saveItem() {
+        this.submitted = true;
+        if (this.item.product && this.item.quantity && this.item.unitValue) {
+            
+            
+            this.item.product = {
+                id: this.item.product
+            } as Product
+
+            this.item.notaFiscal = {
+                id: this.notaFiscal.id,
+            }
+
+            if (this.item.id) {
+                this.itemsService.updateItem(this.item.id, this.item).pipe(
+                    catchError((error) => {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: error,
+                            life: 3000
+                        });
+                        return throwError(() => error);
+                    })
+                ).subscribe(() => {
+                    this.loadData();
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Item Atualizado',
+                        life: 3000
+                    });
+                });
+            } else {
+                this.itemsService.createItem(this.item).pipe(
+                    catchError((error) => {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: error,
+                            life: 3000
+                        });
+                        return throwError(error);
+                    })
+                ).subscribe(() => {
+                    this.loadData();
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Item Criado',
+                        life: 3000
+                    });    
+                });
+            }
+
+            this.itemDialog = false;
+            this.item = {};
         }
     }
 }

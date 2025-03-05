@@ -69,7 +69,7 @@
     </ng-template>
 </p-table>
 
-<p-dialog [(visible)]="notaFiscalDialog" [style]="{ width: '450px' }" header="Detalhes da Nota Fiscal" [modal]="true">
+<p-dialog [(visible)]="notaFiscalDialog" [style]="{ width: '900px' }" header="Detalhes da Nota Fiscal" [modal]="true">
     <ng-template #content>
         <div class="flex flex-col gap-6">
             <div>
@@ -92,16 +92,65 @@
                 <small class="text-red-500" *ngIf="submitted && !notaFiscal.address">Endereço é obrigatório.</small>
             </div>
             <div>
-                <label for="totalValue" class="block font-bold mb-3">Valor Total</label>
-                <input type="number" pInputText id="totalValue" [(ngModel)]="notaFiscal.totalValue" required fluid />
-                <small class="text-red-500" *ngIf="submitted && !notaFiscal.totalValue">Valor Total é obrigatório.</small>
+                <span for="totalValue" class="block font-bold mb-3">Valor Total: {{ notaFiscal.totalValue | currency: 'BRL' }}</span>
+            </div>
+            <div>
+                <label for="items" class="block font-bold mb-3">Itens</label>
+                <p-table [value]="notaFiscal.items || []">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Preço Unitário</th>
+                            <th>Preço Total</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                        <tr>
+                            <td>{{ item.product.code }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.unitValue | currency: 'BRL' }}</td>
+                            <td>{{ item.totalItemValue | currency: 'BRL' }}</td>
+                            <td>
+                                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editItem(item)" />
+                                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteItem(item)" />
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <p-button label="Adicionar Item" icon="pi pi-plus" (click)="openNewItem()"></p-button>
             </div>
         </div>
     </ng-template>
 
     <ng-template #footer>
-        <p-button class="text-blue-500" label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
-        <p-button class="text-blue-500" label="Salvar" icon="pi pi-check" (click)="saveNotaFiscal()" />
+        <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button label="Salvar" icon="pi pi-check" (click)="saveNotaFiscal()" />
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="itemDialog" [style]="{ width: '450px' }" header="Adicionar Item" [modal]="true">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+            <div>
+                <label for="productCode" class="block font-bold mb-3">Produto</label>
+                <p-select [options]="products()" optionLabel="code" optionValue="id" [(ngModel)]="item.product" placeholder="Selecione um Produto"></p-select>
+                <small class="text-red-500" *ngIf="submitted && !item.product">Produto é obrigatório.</small>
+            </div>
+            <div>
+                <label for="quantity" class="block font-bold mb-3">Quantidade</label>
+                <input type="number" pInputText id="quantity" [(ngModel)]="item.quantity" required fluid />
+            </div>
+            <div>
+                <label for="unitPrice" class="block font-bold mb-3">Preço Unitário</label>
+                <input type="number" pInputText id="unitPrice" [(ngModel)]="item.unitValue" required fluid />
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Cancelar" icon="pi pi-times" text (click)="itemDialog = false" />
+        <p-button label="Salvar" icon="pi pi-check" (click)="saveItem()" />
     </ng-template>
 </p-dialog>
 
