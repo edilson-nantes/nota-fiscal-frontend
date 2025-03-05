@@ -85,7 +85,7 @@ v22.14.0
 #Instalar as dependências
  npm install
 ```
-- As credenciais do arquivo .env podem ser alteradas de acordo com a necessidade, mas as credenciais usadas no desenvolvimento foram:
+- As credenciais do arquivo environment.ts podem ser alteradas de acordo com a necessidade, mas as credenciais usadas no desenvolvimento foram:
 
 ```bash
 export const environment = {
