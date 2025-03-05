@@ -11,12 +11,12 @@
     [rows]="10"
     [columns]="cols"
     [paginator]="true"
-    [globalFilterFields]="['numberNota', 'suplierId', 'address', 'totalValue']"
+    [globalFilterFields]="['numberNota', 'suplier.legalName', 'address', 'totalValue']"
     [tableStyle]="{ 'min-width': '75rem' }"
     [(selection)]="selectedNotasFiscais"
     [rowHover]="true"
     dataKey="id"
-    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} notas fiscais"
+    currentPageReportTemplate="Mostrando de {first} a {last} de {totalRecords} notas fiscais"
     [showCurrentPageReport]="true"
     [rowsPerPageOptions]="[10, 20, 30]"
 >
@@ -34,13 +34,13 @@
             <th style="width: 3rem">
                 <p-tableHeaderCheckbox />
             </th>
-            <th style="min-width: 16rem">Número da Nota</th>
-            <th pSortableColumn="emissionDate" style="min-width:16rem">
+            <th style="min-width: 8rem">Número da Nota</th>
+            <th pSortableColumn="emissionDate" style="min-width:8rem">
                 Data de Emissão
                 <p-sortIcon field="emissionDate" />
             </th>
             <th>Fornecedor</th>
-            <th pSortableColumn="address" style="min-width: 8rem">
+            <th pSortableColumn="address" style="min-width: 16rem">
                 Endereço
                 <p-sortIcon field="address" />
             </th>
@@ -56,11 +56,11 @@
             <td style="width: 3rem">
                 <p-tableCheckbox [value]="notaFiscal" />
             </td>
-            <td style="min-width: 12rem">{{ notaFiscal.numberNota }}</td>
-            <td style="min-width: 16rem">{{ notaFiscal.emissionDate | date: 'dd/MM/yyyy' }}</td>
-            <td style="min-width: 16rem">{{ notaFiscal.suplier.legalName }}</td>
+            <td style="min-width: 8rem">{{ notaFiscal.numberNota }}</td>
+            <td style="min-width: 8rem">{{ notaFiscal.emissionDate | date: 'dd/MM/yyyy' }}</td>
+            <td style="min-width: 12rem">{{ notaFiscal.suplier.legalName }}</td>
             <td style="min-width: 16rem">{{ notaFiscal.address }}</td>
-            <td style="min-width: 16rem">{{ notaFiscal.totalValue | currency: 'BRL' }}</td>
+            <td style="min-width: 12rem">{{ notaFiscal.totalValue | currency: 'BRL' }}</td>
             <td>
                 <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editNotaFiscal(notaFiscal)" />
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteNotaFiscal(notaFiscal)" />

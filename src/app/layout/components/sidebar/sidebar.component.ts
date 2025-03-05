@@ -10,8 +10,8 @@ import { RouterModule } from '@angular/router';
 })
 export class SidebarComponent {
   menuItems = [
-    { label: 'Produtos', icon: 'pi pi-fw pi-id-card', link: '/produtos' },
-    { label: 'Fornecedores', link: '/fornecedores' },
-    { label: 'Notas Fiscais', link: '/notas-fiscais' }
+    { label: 'Produtos', icon: 'pi pi-fw pi-tag', link: '/produtos' },
+    { label: 'Fornecedores', icon: 'pi pi-fw pi-id-card', link: '/fornecedores' },
+    { label: 'Notas Fiscais', icon: 'pi pi-fw pi-pen-to-square', link: '/notas-fiscais' }
   ]
 }
