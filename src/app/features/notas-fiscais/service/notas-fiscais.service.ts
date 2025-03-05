@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { Suplier } from '../../supliers/service/supliers.service';
 import { ItemNfiscal } from './item-nfiscal.service';
+import { environment } from '../../../../environments/environment';
 
 export interface NotaFiscal {
     id?: number;
@@ -20,7 +21,7 @@ export interface NotaFiscal {
     providedIn: 'root'
 })
 export class NotasFiscaisService {
-    private apiUrl = 'http://localhost:8080/notas-fiscais';
+    private apiUrl = `${environment.apiUrl}/notas-fiscais`;
     private notasFiscaisSubject = new BehaviorSubject<NotaFiscal[]>([]);
     notasFiscais$ = this.notasFiscaisSubject.asObservable();
 

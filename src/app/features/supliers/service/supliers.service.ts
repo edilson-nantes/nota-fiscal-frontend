@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface Suplier {
     id?: number;
@@ -18,7 +19,7 @@ export interface Suplier {
     providedIn: 'root'
 })
 export class SupliersService {
-  private apiUrl = 'http://localhost:8080/supliers';
+  private apiUrl = `${environment.apiUrl}/supliers`;
   private supliersSubject = new BehaviorSubject<Suplier[]>([]);
   supliers$ = this.supliersSubject.asObservable();
 
@@ -79,6 +80,6 @@ export class SupliersService {
         
         errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
-    return throwError(errorMessage);
+    return throwError(() => errorMessage);
 }
 }

@@ -6,8 +6,7 @@ import { TopbarComponent } from "../topbar/topbar.component";
 @Component({
   selector: 'app-main',
   imports: [SidebarComponent, RouterOutlet, TopbarComponent],
-  templateUrl: './main.component.html',
-  styleUrl: './main.component.css'
+  templateUrl: './main.component.html'
 })
 export class MainComponent {
 

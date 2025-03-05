@@ -57,7 +57,6 @@ interface ExportColumn {
         DatePickerModule,
     ],
     templateUrl: './notas-fiscais.component.html',
-    styleUrls: ['./notas-fiscais.component.css'],
     providers: [MessageService, NotasFiscaisService, SupliersService, ConfirmationService]
 })
 export class NotasFiscaisComponent implements OnInit {
