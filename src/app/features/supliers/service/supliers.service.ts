@@ -11,6 +11,7 @@ export interface Suplier {
     cnpj?: string;
     situation?: string;
     dataBaixa?: Date;
+    hasMovement?: boolean;
 }
 
 @Injectable({

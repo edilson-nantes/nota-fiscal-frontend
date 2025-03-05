@@ -79,6 +79,6 @@ export class NotasFiscaisService {
         } else {
             errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
         }
-        return throwError(errorMessage);
+        return throwError(() => errorMessage);
     }
 }

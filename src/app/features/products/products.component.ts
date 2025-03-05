@@ -82,6 +82,8 @@ export class ProductsComponent implements OnInit {
         this.products.set(data);
       });
       this.productsService.getProducts().subscribe();
+
+      console.log(this.products());
         
     }
 
@@ -171,7 +173,7 @@ export class ProductsComponent implements OnInit {
                       detail: error,
                       life: 3000
                   });
-                  return throwError(error);
+                  return throwError(() => error);
               })
               ).subscribe(() => {
                   this.loadData();

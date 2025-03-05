@@ -113,7 +113,11 @@ export class NotasFiscaisComponent implements OnInit {
         this.notasFiscaisService.getNotasFiscais().subscribe();
 
         this.supliersService.supliers$.subscribe((data) => {
-            this.supliers.set(data);
+            data.map((suplier) => {
+                if (!suplier.hasMovement){
+                    this.supliers.update(supliers => [...supliers, suplier]);
+                };
+            })
         });
         this.supliersService.getSupliers().subscribe();
 
@@ -176,7 +180,6 @@ export class NotasFiscaisComponent implements OnInit {
             header: 'Confirmar',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                console.log(notaFiscal.id);
                 this.notasFiscaisService.deleteNotaFiscal(notaFiscal.id!).subscribe(() => {
                     this.loadData();
                     this.messageService.add({
@@ -223,7 +226,7 @@ export class NotasFiscaisComponent implements OnInit {
                             detail: error,
                             life: 3000
                         });
-                        return throwError(error);
+                        return throwError(() => error);
                     })
                 ).subscribe(() => {
                     this.loadData();
@@ -243,7 +246,7 @@ export class NotasFiscaisComponent implements OnInit {
                             detail: error,
                             life: 3000
                         });
-                        return throwError(error);
+                        return throwError(() => error);
                     })
                 ).subscribe(() => {
                     this.loadData();
@@ -335,7 +338,7 @@ export class NotasFiscaisComponent implements OnInit {
                             detail: error,
                             life: 3000
                         });
-                        return throwError(error);
+                        return throwError(() => error);
                     })
                 ).subscribe(() => {
                     this.loadData();
