@@ -34,8 +34,6 @@ export class ItemNfiscalService {
     }
 
     createItem(item: ItemNfiscal): Observable<ItemNfiscal> {
-
-        console.log(item);
         return this.http.post<ItemNfiscal>(`${this.apiUrl}`, item)
             .pipe(
                 tap(data => this.itemsSubject.next([...this.itemsSubject.getValue(), data])),

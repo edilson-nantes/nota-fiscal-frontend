@@ -173,7 +173,6 @@ export class NotasFiscaisComponent implements OnInit {
     }
 
     deleteNotaFiscal(notaFiscal: NotaFiscal) {
-        console.log(notaFiscal);
         this.confirmationService.confirm({
             message: 'Você tem certeza que quer deletar a nota fiscal:  ' + notaFiscal.numberNota + '?',
             header: 'Confirmar',
@@ -270,8 +269,6 @@ export class NotasFiscaisComponent implements OnInit {
 
     editItem(item: ItemNfiscal) {
         this.item = { ...item, };
-
-        console.log(this.item);
 
         this.itemDialog = true;
     }
