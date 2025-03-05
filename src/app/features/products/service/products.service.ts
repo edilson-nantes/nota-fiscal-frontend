@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface Product {
     id?: number;
@@ -14,7 +15,7 @@ export interface Product {
     providedIn: 'root'
 })
 export class ProductsService {
-  private apiUrl = 'http://localhost:8080/products';
+  private apiUrl = `${environment.apiUrl}/products`;
   private productsSubject = new BehaviorSubject<Product[]>([]);
   products$ = this.productsSubject.asObservable();
 
