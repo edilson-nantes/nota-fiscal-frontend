@@ -51,7 +51,6 @@ interface ExportColumn {
         ConfirmDialogModule
     ],
     templateUrl: './supliers.component.html',
-    styleUrls: ['./supliers.component.css'],
     providers: [MessageService, SupliersService, ConfirmationService]
 })
 export class SupliersComponent implements OnInit {
