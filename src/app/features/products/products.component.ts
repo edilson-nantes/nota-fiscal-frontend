@@ -82,8 +82,6 @@ export class ProductsComponent implements OnInit {
         this.products.set(data);
       });
       this.productsService.getProducts().subscribe();
-
-      console.log(this.products());
         
     }
 

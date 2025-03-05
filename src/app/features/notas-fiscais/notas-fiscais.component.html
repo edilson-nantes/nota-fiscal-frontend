@@ -135,7 +135,6 @@
             <div>
                 <label for="productCode" class="block font-bold mb-3">Produto</label>
                 <p-select [options]="products()" optionLabel="code" optionValue="id" [(ngModel)]="item.product" placeholder="Selecione um Produto"></p-select>
-                <small class="text-red-500" *ngIf="submitted && !item.product">Produto é obrigatório.</small>
             </div>
             <div>
                 <label for="quantity" class="block font-bold mb-3">Quantidade</label>
